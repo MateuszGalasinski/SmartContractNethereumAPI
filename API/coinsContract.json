@@ -1,0 +1,69 @@
+{
+  "contractName": "CoinsContract",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "balance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "initial",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "add",
+          "type": "uint256"
+        }
+      ],
+      "name": "addCoins",
+      "outputs": [
+        {
+          "name": "b",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "add",
+          "type": "uint256"
+        }
+      ],
+      "name": "subtractCoins",
+      "outputs": [
+        {
+          "name": "b",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506040516020806101a783398101806040528101908080519060200190929190505050806000819055505061015d8061004a6000396000f300608060405260043610610057576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630173e3f41461005c57806349fb39661461009d578063b69ef8a8146100de575b600080fd5b34801561006857600080fd5b5061008760048036038101908080359060200190929190505050610109565b6040518082815260200191505060405180910390f35b3480156100a957600080fd5b506100c86004803603810190808035906020019092919050505061011a565b6040518082815260200191505060405180910390f35b3480156100ea57600080fd5b506100f361012b565b6040518082815260200191505060405180910390f35b600081600054019050809050919050565b600081600054039050809050919050565b600054815600a165627a7a7230582072ba087b60f2bd3c7caceb44adef09f5cbb2335f4084dc5d3d2440d6fc4464df0029"
+}
