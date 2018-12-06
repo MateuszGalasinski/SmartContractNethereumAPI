@@ -1,5 +1,6 @@
 ﻿using ContractManagement.Components;
 using ContractManagement.Models;
+using ContractManagement.Models.Options;
 using Microsoft.Extensions.Options;
 using Nethereum.Contracts;
 using Nethereum.Web3;
@@ -13,13 +14,13 @@ namespace ContractManagement
         private const int Gas = 470000;
 
         private readonly Web3 _web3;
-        private readonly Account _account;
+        private readonly AccountOptions _account;
         private readonly IContractStore _contractStore;
         private readonly IContractDefinitionProvider _contractProvider;
 
-        public ContractFacade(IOptions<NetworkInfo> config, IAccountProvider accountProvider, IContractStore contractStore, IContractDefinitionProvider contractProvider)
+        public ContractFacade(IOptionsMonitor<NetworkOptions> optionsAccessor, IAccountProvider accountProvider, IContractStore contractStore, IContractDefinitionProvider contractProvider)
         {
-            _web3 = new Web3(config.Value.Address);
+            _web3 = new Web3($"{optionsAccessor.CurrentValue.Url}:{optionsAccessor.CurrentValue.Port}");
             _account = accountProvider.GetAccount();
             _contractStore = contractStore;
             _contractProvider = contractProvider;
@@ -81,7 +82,7 @@ namespace ContractManagement
                         throw new ApplicationException("Tried to release contract, but got no contract address");
                     }
 
-                    await SaveContract(new ContractInfo(name, abi, byteCode, transactionHash));
+                    await SaveContract(new ContractInfo(name, abi, byteCode, transactionHash, contractAddress));
                 }
                 catch (Exception ex)
                 {
@@ -90,7 +91,7 @@ namespace ContractManagement
             }
         }
 
-        public async Task<string> GetContractAddressFromNetwork(string transactionHash)
+        private async Task<string> GetContractAddressFromNetwork(string transactionHash)
         {
             var resultUnlocking = await _web3.Personal.UnlockAccount.SendRequestAsync(_account.Address, _account.Password, 60);
             if (resultUnlocking)

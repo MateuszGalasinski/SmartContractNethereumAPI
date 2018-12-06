@@ -1,19 +1,19 @@
 ﻿using ContractManagement.Components;
-using ContractManagement.Models;
+using ContractManagement.Models.Options;
 using Microsoft.Extensions.Options;
 
 namespace ContractManagement
 {
     public class AccountProvider : IAccountProvider
     {
-        private readonly Account _account;
+        private readonly AccountOptions _account;
 
-        public AccountProvider(IOptions<Account> account)
+        public AccountProvider(IOptionsMonitor<AccountOptions> account)
         {
-            _account = account.Value;
+            _account = account.CurrentValue;
         }
 
-        public Account GetAccount()
+        public AccountOptions GetAccount()
         {
             return _account;
         }

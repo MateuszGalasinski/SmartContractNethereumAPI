@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using ContractManagement.Components;
+using ContractManagement.Models.Options;
 using Factory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,7 +27,13 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            //var configBuilder = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile("appsettings.json", optional: true);
+            //var config = configBuilder.Build();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            ConfigureOptionsObjects(services);
 
             ContainerBuilder builder = ContainerCreator.BuildContainer();
             builder.Populate(services);
@@ -35,6 +42,12 @@ namespace API
             ReleaseContracts();
 
             return new AutofacServiceProvider(Container);
+        }
+
+        private void ConfigureOptionsObjects(IServiceCollection services)
+        {
+            services.Configure<NetworkOptions>(Configuration.GetSection("network_options"));
+            services.Configure<AccountOptions>(Configuration.GetSection("user_account"));
         }
 
         private void ReleaseContracts()
