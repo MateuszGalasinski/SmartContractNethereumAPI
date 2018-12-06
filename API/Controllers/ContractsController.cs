@@ -21,12 +21,12 @@ namespace API.Controllers
             return await _facade.GetBalance(walletAddress);
         }
 
-        //[HttpGet]
-        //[Route("releaseContract/{name}")]
-        //public async Task ReleaseContract([FromRoute] string name)
-        //{
-        //    await _facade.ReleaseContract(name, abi, ByteCode, Gas);
-        //}
+        [HttpGet]
+        [Route("list")]
+        public async Task<string[]> GetAll()
+        {
+            return await _facade.GetAllContractsNames();
+        }
 
         [HttpGet]
         [Route("checkContract/{name}")]

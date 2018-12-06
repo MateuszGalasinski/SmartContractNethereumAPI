@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Nethereum.Contracts;
 using Nethereum.Web3;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ContractManagement
@@ -32,6 +33,11 @@ namespace ContractManagement
             {
                 await ReleaseContract(contractDefinition.Name, contractDefinition.Abi, contractDefinition.Bytecode, Gas);
             }
+        }
+
+        public async Task<string[]> GetAllContractsNames()
+        {
+            return (await _contractStore.GetAll()).Select(c => c.Name).ToArray();
         }
 
         public async Task<string> ExecuteMethod(string name, string contractMethod, int value)
