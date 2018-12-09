@@ -1,7 +1,8 @@
-﻿using Autofac;
+﻿using API.Models.MethodsOutputs;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using ContractManagement.Components;
-using ContractManagement.Models.Options;
+using Core.Components;
+using Core.Options;
 using Factory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,13 +25,8 @@ namespace API
         public IConfiguration Configuration { get; }
         public IHostingEnvironment Environment { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            //var configBuilder = new ConfigurationBuilder()
-            //    .SetBasePath(Directory.GetCurrentDirectory())
-            //    .AddJsonFile("appsettings.json", optional: true);
-            //var config = configBuilder.Build();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             ConfigureOptionsObjects(services);
@@ -39,9 +35,20 @@ namespace API
             builder.Populate(services);
             Container = builder.Build();
 
+            PrepareGetterStore();
             ReleaseContracts();
 
             return new AutofacServiceProvider(Container);
+        }
+
+        public void Configure(IApplicationBuilder app, IApplicationLifetime lifetime)
+        {
+            //app.UseHsts();
+
+            app.UseHttpsRedirection();
+            app.UseMvc();
+
+            lifetime.ApplicationStopped.Register(() => Container.Dispose());
         }
 
         private void ConfigureOptionsObjects(IServiceCollection services)
@@ -53,21 +60,16 @@ namespace API
         private void ReleaseContracts()
         {
             var contractProvider = Container.Resolve<IContractDefinitionProvider>();
-            contractProvider.ReadContractFromFile(Configuration.GetValue<string>("ContractFilePath"));
+            contractProvider.ReadAllContracts(Configuration.GetValue<string>("contracts_dir"));
 
             var contractFacade = Container.Resolve<IContractFacade>();
-            contractFacade.ReleaseAllContracts();
+            contractFacade.ReleaseAllContracts().Wait();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IApplicationLifetime lifetime)
+        private void PrepareGetterStore()
         {
-            //app.UseHsts();
-
-            app.UseHttpsRedirection();
-            app.UseMvc();
-
-            lifetime.ApplicationStopped.Register(() => Container.Dispose());
+            var store = Container.Resolve<IGetterStore>();
+            store.Add<Ballot>("MyStringStore", "ballots");
         }
     }
 }

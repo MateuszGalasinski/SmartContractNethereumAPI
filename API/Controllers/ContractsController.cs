@@ -1,4 +1,5 @@
-﻿using ContractManagement.Components;
+﻿using API.Models;
+using Core.Components;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -35,16 +36,25 @@ namespace API.Controllers
             return await _facade.TryGetContractAddress(name) != null;
         }
 
-        [HttpGet]
-        [Route("exeContract/{name}/{contractMethod}/{value}")]
-        public async Task<string> ExecuteContract([FromRoute] string name, [FromRoute] string contractMethod, [FromRoute] int value)
+        //[HttpPost]
+        //[Route("execute")]
+        //public async Task<object> Execute([FromBody]ExecuteMethodData executeData)
+        //{
+        //    return await _facade.ExecuteMethod(executeData.ContractName, executeData.MethodName, executeData.Parameters);
+        //}
+
+        [HttpPost]
+        [Route("getsimple")]
+        public async Task<object> GetSimpleType([FromBody]ExecuteMethodData executeData)
         {
-            return await ExecuteMethod(name, contractMethod, value);
+            return await _facade.InvokeGetSimpleType<string>(executeData.ContractName, executeData.MethodName, executeData?.Parameters);
         }
 
-        private async Task<string> ExecuteMethod(string name, string contractMethod, int value)
+        [HttpPost]
+        [Route("getcomplex")]
+        public async Task<object> GetComplexType([FromBody]ExecuteMethodData executeData)
         {
-            return await _facade.ExecuteMethod(name, contractMethod, value);
+            return await _facade.InvokeGetComplex(executeData.ContractName, executeData.MethodName, executeData?.Parameters);
         }
     }
 }

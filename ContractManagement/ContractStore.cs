@@ -1,5 +1,5 @@
-﻿using ContractManagement.Components;
-using ContractManagement.Models;
+﻿using Core.Components;
+using Core.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +9,11 @@ namespace ContractManagement
     public class ContractStore : IContractStore
     {
         private readonly List<ContractInfo> _contracts = new List<ContractInfo>();
+
+        public async Task<IEnumerable<ContractInfo>> GetAll()
+        {
+            return await Task.Run(() => _contracts);
+        }
 
         public async Task<ContractInfo> Get(string name)
         {

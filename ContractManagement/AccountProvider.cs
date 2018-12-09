@@ -1,5 +1,5 @@
-﻿using ContractManagement.Components;
-using ContractManagement.Models.Options;
+﻿using Core.Components;
+using Core.Options;
 using Microsoft.Extensions.Options;
 
 namespace ContractManagement
