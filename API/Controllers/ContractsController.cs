@@ -54,7 +54,7 @@ namespace API.Controllers
         [Route("getcomplex")]
         public async Task<object> GetComplexType([FromBody]ExecuteMethodData executeData)
         {
-            return await _facade.InvokeGetComplex(executeData.ContractName, executeData.MethodName, executeData?.Parameters);
+            return await _facade.InvokeGetComplex(executeData.ContractName, executeData.MethodName, executeData?.Parameters).ConfigureAwait(false);
         }
     }
 }

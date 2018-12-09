@@ -87,8 +87,8 @@ namespace ContractManagement
             Function method = await GetFunction(name, contractMethod);
             try
             {
-                object result = _getterStore.InvokeGetComplex(name, contractMethod, method, parameters);
-                return result;
+                await UnlockAccount();
+                return await _getterStore.InvokeGetComplex(name, contractMethod, method, parameters);
             }
             catch (Exception ex)
             {
