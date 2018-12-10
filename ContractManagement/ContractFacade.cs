@@ -23,24 +23,28 @@ namespace ContractManagement
         private readonly IContractStore _contractStore;
         private readonly IContractDefinitionProvider _contractProvider;
         private readonly IGetterStore _getterStore;
+        private readonly ILogger _logger;
 
         public ContractFacade(IOptionsMonitor<NetworkOptions> optionsAccessor,
             IAccountProvider accountProvider, 
             IContractStore contractStore,
             IContractDefinitionProvider contractProvider,
-            IGetterStore getterStore)
+            IGetterStore getterStore,
+            ILogger logger)
         {
             _web3 = new Web3(optionsAccessor.CurrentValue.Address);
             _account = accountProvider.GetAccount();
             _contractStore = contractStore;
             _contractProvider = contractProvider;
             _getterStore = getterStore;
+            _logger = logger;
         }
 
         public async Task ReleaseAllContracts()
         {
             foreach (var contractDefinition in _contractProvider.ContractDefinitions)
             {
+                _logger.Info($"Starting to release contract: {contractDefinition.Name}");
                 await ReleaseContract(contractDefinition.Name, contractDefinition.Abi, contractDefinition.Bytecode, (int)_gas.Value);
             }
         }
@@ -56,25 +60,25 @@ namespace ContractManagement
             return (await _contractStore.GetAll()).Select(c => c.Name).ToArray();
         }
 
-        public async Task<string> ExecuteMethod(string name, string contractMethod, Dictionary<string, string> parameters) //TODO: add parameters validation
+        public async Task<object> ExecuteMethod(string name, string contractMethod, Dictionary<string, object> parameters) //TODO: add parameters validation
         {
             Function method = await GetFunction(name, contractMethod);
             try
             {
                 object[] parametersObjects = parameters.Values.Select(p =>
                 {
-                    if (int.TryParse(p, out int parsed))
+                    if (p is string s)
                     {
-                        return (object) parsed;
+                        if (int.TryParse(s, out int parsed))
+                        {
+                            return (object)parsed;
+                        }
                     }
-                    else
-                    {
-                        return (object) p;
-                    }
-                }).ToArray<object>();
-                //var callResult = await method.CallAsync<object>(parametersObjects);
-                var result = await method.SendTransactionAndWaitForReceiptAsync(_account.Address, _gas, null, null, parametersObjects);
-                return result.ToString();
+                    return p;
+                }).ToArray();
+                var callResult = await method.CallAsync<object[]>(parametersObjects);
+                //var result = await method.SendTransactionAndWaitForReceiptAsync(_account.Address, _gas, null, null, parametersObjects);
+                return callResult;
             }
             catch (Exception ex)
             {
@@ -84,6 +88,7 @@ namespace ContractManagement
 
         public async Task<object> InvokeGetComplex(string name, string contractMethod, Dictionary<string, object> parameters)
         {
+            _logger.Info($"Invoking getter for complex type: {name}.{contractMethod} with parameters: {parameters.Values.Aggregate((p, n) => $"{p} {n}")}");
             Function method = await GetFunction(name, contractMethod);
             try
             {
@@ -98,6 +103,7 @@ namespace ContractManagement
 
         public async Task<TReturn> InvokeGetSimpleType<TReturn>(string name, string contractMethod, Dictionary<string, object> parameters)
         {
+            _logger.Info($"Invoking getter for simple type: {name}.{contractMethod} with parameters: {parameters.Values.Aggregate((p, n) => $"{p} {n}")}");
             Function method = await GetFunction(name, contractMethod);
             try
             {
@@ -219,6 +225,7 @@ namespace ContractManagement
            
             if (receipt != null)
             {
+                _logger.Info($"Got contract address: {receipt.ContractAddress}");
                 return receipt.ContractAddress;
             }
             else

@@ -36,18 +36,18 @@ namespace API.Controllers
             return await _facade.TryGetContractAddress(name) != null;
         }
 
-        //[HttpPost]
-        //[Route("execute")]
-        //public async Task<object> Execute([FromBody]ExecuteMethodData executeData)
-        //{
-        //    return await _facade.ExecuteMethod(executeData.ContractName, executeData.MethodName, executeData.Parameters);
-        //}
+        [HttpPost]
+        [Route("execute")]
+        public async Task<object> Execute([FromBody]ExecuteMethodData executeData)
+        {
+            return await _facade.ExecuteMethod(executeData.ContractName, executeData.MethodName, executeData.Parameters);
+        }
 
         [HttpPost]
         [Route("getsimple")]
         public async Task<object> GetSimpleType([FromBody]ExecuteMethodData executeData)
         {
-            return await _facade.InvokeGetSimpleType<string>(executeData.ContractName, executeData.MethodName, executeData?.Parameters);
+            return await _facade.InvokeGetSimpleType<string>(executeData.ContractName, executeData.MethodName, executeData?.Parameters).ConfigureAwait(false);
         }
 
         [HttpPost]

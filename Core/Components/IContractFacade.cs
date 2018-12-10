@@ -8,7 +8,7 @@ namespace Core.Components
         Task ReleaseAllContracts();
         Task<string[]> GetAllContractsNames();
         Task<string> TryGetContractAddress(string name);
-        Task<string> ExecuteMethod(string name, string contractMethod, Dictionary<string, string> parameters);
+        Task<object> ExecuteMethod(string name, string contractMethod, Dictionary<string, object> parameters);
         Task<decimal> GetBalance(string address);
 
         Task<object> InvokeGetComplex(string name, string contractMethod, Dictionary<string, object> parameters);

@@ -1,7 +1,5 @@
-﻿using API.Models.MethodsOutputs;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Core.Components;
 using Core.Options;
 using Factory;
 using Microsoft.AspNetCore.Builder;
@@ -15,19 +13,16 @@ namespace API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Environment = environment;
         }
 
         public IContainer Container { get; private set; }
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment Environment { get; }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             ConfigureOptionsObjects(services);
 
@@ -35,8 +30,7 @@ namespace API
             builder.Populate(services);
             Container = builder.Build();
 
-            PrepareGetterStore();
-            ReleaseContracts();
+            ContractsStartup.InitContractsManagement(Container, Configuration);
 
             return new AutofacServiceProvider(Container);
         }
@@ -55,21 +49,6 @@ namespace API
         {
             services.Configure<NetworkOptions>(Configuration.GetSection("network_options"));
             services.Configure<AccountOptions>(Configuration.GetSection("user_account"));
-        }
-
-        private void ReleaseContracts()
-        {
-            var contractProvider = Container.Resolve<IContractDefinitionProvider>();
-            contractProvider.ReadAllContracts(Configuration.GetValue<string>("contracts_dir"));
-
-            var contractFacade = Container.Resolve<IContractFacade>();
-            contractFacade.ReleaseAllContracts().Wait();
-        }
-
-        private void PrepareGetterStore()
-        {
-            var store = Container.Resolve<IGetterStore>();
-            store.Add<Ballot>("MyStringStore", "ballots");
         }
     }
 }

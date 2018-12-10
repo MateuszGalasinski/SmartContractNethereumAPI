@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOTypeBuilding.Tests", "DTOTypeBuilding.Tests\DTOTypeBuilding.Tests.csproj", "{102C74E4-207C-4660-B568-D89BFBCF79D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContractManagement.Tests", "ContractManagement.Tests\ContractManagement.Tests.csproj", "{FF142082-11C9-4670-92EF-D8C844238EE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContractManagement.Tests", "ContractManagement.Tests\ContractManagement.Tests.csproj", "{FF142082-11C9-4670-92EF-D8C844238EE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
